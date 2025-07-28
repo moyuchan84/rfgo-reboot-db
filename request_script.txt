@@ -1,0 +1,85 @@
+postgresql 의 ddl 구문 및 sample rows insert dml 까지 생성해줘
+모든 테이블은 fk 로 묶여있는 테이블에 대해서 update / delete 가 cascade가 되게
+
+
+
+1. 샘플 3개
+
+tablename :  master.processplan
+
+columns 
+ - id : pk (serial)
+ - design_rule :text
+ - update_time : timestamp default now
+
+2. processplan_id 당 3개
+tablename : master.beol_option
+columns
+ - id : pk(serial)
+ - processplan_id : fk(processplan`s id(pk))
+ - option_name : text
+ - update_time : timestamp default now
+
+3. beol_option_id 당 3개
+tablename : master.product
+columns
+ - id : pk(serial)
+ - beol_option_id : fk(beol_option`s id(pk))
+ - processplan_id : fk(processplan`s id(pk))
+ - part_id : text
+ - product_name : text
+ - update_time : timestamp default now
+
+4. product 당 1개 (product table 과 1:1 관계)
+tablename : request.product_meta
+columns
+ - id : pk(serial)
+ - product_id : fk(product`s id(pk))
+ - process_id : text 
+ - mto_date : date
+ - customer: text
+ - update_time : timestamp default now
+
+5. product 당 2~4개 (product table 과 1:n관계)
+tablename : request.request_item
+columns
+ - id : pk(serial)
+ - product_id : fk(product`s id(pk))
+ - title : text
+ - description : text
+ - requester_id : text
+ - requester_name : text
+ - update_time : timestamp default now
+
+6. item 당 1개 (request_item 과 1:1 관계)
+tablename : request.item_approval_status
+columns
+ - id : pk(serial)
+ - request_item_id :  request.request_item`s id(pk)
+ - request_approval : enum('pending','rejected','appoved','not-reviewed','none')
+ - request_approval_update_time : timestamp default now
+
+7. product 당 4개이상(table_name 과 table_row다르게)
+tablename : keydata.product_key_table
+columns 
+ - id : pk(serial)
+ - product_id : fk(product`s id(pk))
+ - beol_option_id : fk(beol_option`s id(pk))
+ - processplan_id : fk(processplan`s id(pk))
+ - table_name: text
+ - original_headers : text[]
+ - meta_info : text[]
+ - table_rows : json[] (sample 은 [{'keyname':'abcd', 'step':'12.0', composition:'1_2'},{'keyname':'abcd', 'step':'12.0', composition:'1_2',}...] 의 형태로 최소 json 이 10개이상]-> oringal headers 의 갯수와 json의 key의 갯수 동일)
+ - rev_no : int
+ - update_time : timestamp default now
+
+8. processplan 당 4개이상(table_name 과 table_row다르게)
+tablename : keydata.key_info_table
+columns 
+ - id : pk(serial) 
+ - processplan_id : fk(processplan`s id(pk))
+ - info_table_name: text
+ - original_headers : text[]
+ - info_table_rows : json[] (sample 은 [{'keyname':'abcd', 'step':'12.0', composition:'1_2'},{'keyname':'abcd', 'step':'12.0', composition:'1_2',}...] 의 형태로 최소 json 이 10개이상]
+ - rev_no : int
+ - update_time : timestamp default now
