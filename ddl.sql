@@ -185,10 +185,10 @@ CREATE TABLE keydata.product_key_table (
     product_id INT NOT NULL,
     beol_option_id INT NOT NULL,
     processplan_id INT NOT NULL,
-    table_name TEXT NOT NULL,
-    original_headers TEXT[] NOT NULL,
-    meta_info TEXT[] NOT NULL,
-    table_rows JSONB[] NOT NULL, -- JSONB[] for better performance with JSON operations
+    key_table_name TEXT NOT NULL,
+    original_header TEXT[] NOT NULL,
+    meta_info_list TEXT[] NOT NULL,
+    key_table_json JSONB[] NOT NULL, -- JSONB[] for better performance with JSON operations
     rev_no INT NOT NULL,
     update_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT fk_product_key_table_product
@@ -210,7 +210,9 @@ CREATE TABLE keydata.product_key_table (
 
 -- DML for keydata.product_key_table (4+ per product)
 -- Product PART-A1-001 에 대한 샘플 데이터
-INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, table_name, original_headers, meta_info, table_rows, rev_no) VALUES
+-- DML for keydata.product_key_table (4+ per product)
+-- Product PART-A1-001 에 대한 샘플 데이터
+INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, key_table_name, original_header, meta_info_list, key_table_json, rev_no) VALUES
 ((SELECT id FROM master.product WHERE part_id = 'PART-A1-001'),
  (SELECT beol_option_id FROM master.product WHERE part_id = 'PART-A1-001'),
  (SELECT processplan_id FROM master.product WHERE part_id = 'PART-A1-001'),
@@ -218,19 +220,19 @@ INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_i
  ARRAY['Material_Name', 'Density', 'Conductivity'],
  ARRAY['units:kg/m^3', 'units:S/m'],
  ARRAY[
-    '{"keyname": "Copper", "step": "12.0", "composition": "Cu_100", "density": 8960, "conductivity": 5.96e7}'::jsonb,
-    '{"keyname": "Aluminum", "step": "13.0", "composition": "Al_100", "density": 2700, "conductivity": 3.5e7}'::jsonb,
-    '{"keyname": "Silicon", "step": "14.0", "composition": "Si_100", "density": 2330, "conductivity": 1.56e-3}'::jsonb,
-    '{"keyname": "Gold", "step": "15.0", "composition": "Au_100", "density": 19300, "conductivity": 4.52e7}'::jsonb,
-    '{"keyname": "Silver", "step": "16.0", "composition": "Ag_100", "density": 10490, "conductivity": 6.30e7}'::jsonb,
-    '{"keyname": "Brass", "step": "17.0", "composition": "CuZn_mix", "density": 8500, "conductivity": 1.59e7}'::jsonb,
-    '{"keyname": "Steel", "step": "18.0", "composition": "FeC_mix", "density": 7850, "conductivity": 1.0e7}'::jsonb,
-    '{"keyname": "Tungsten", "step": "19.0", "composition": "W_100", "density": 19300, "conductivity": 1.8e7}'::jsonb,
-    '{"keyname": "Nickel", "step": "20.0", "composition": "Ni_100", "density": 8908, "conductivity": 1.43e7}'::jsonb,
-    '{"keyname": "Titanium", "step": "21.0", "composition": "Ti_100", "density": 4506, "conductivity": 2.38e6}'::jsonb
+  '{"keyname": "Copper", "step": "12.0", "composition": "Cu_100", "density": 8960, "conductivity": 5.96e7}'::jsonb,
+  '{"keyname": "Aluminum", "step": "13.0", "composition": "Al_100", "density": 2700, "conductivity": 3.5e7}'::jsonb,
+  '{"keyname": "Silicon", "step": "14.0", "composition": "Si_100", "density": 2330, "conductivity": 1.56e-3}'::jsonb,
+  '{"keyname": "Gold", "step": "15.0", "composition": "Au_100", "density": 19300, "conductivity": 4.52e7}'::jsonb,
+  '{"keyname": "Silver", "step": "16.0", "composition": "Ag_100", "density": 10490, "conductivity": 6.30e7}'::jsonb,
+  '{"keyname": "Brass", "step": "17.0", "composition": "CuZn_mix", "density": 8500, "conductivity": 1.59e7}'::jsonb,
+  '{"keyname": "Steel", "step": "18.0", "composition": "FeC_mix", "density": 7850, "conductivity": 1.0e7}'::jsonb,
+  '{"keyname": "Tungsten", "step": "19.0", "composition": "W_100", "density": 19300, "conductivity": 1.8e7}'::jsonb,
+  '{"keyname": "Nickel", "step": "20.0", "composition": "Ni_100", "density": 8908, "conductivity": 1.43e7}'::jsonb,
+  '{"keyname": "Titanium", "step": "21.0", "composition": "Ti_100", "density": 4506, "conductivity": 2.38e6}'::jsonb
  ], 1);
 
-INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, table_name, original_headers, meta_info, table_rows, rev_no) VALUES
+INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, key_table_name, original_header, meta_info_list, key_table_json, rev_no) VALUES
 ((SELECT id FROM master.product WHERE part_id = 'PART-A1-001'),
  (SELECT beol_option_id FROM master.product WHERE part_id = 'PART-A1-001'),
  (SELECT processplan_id FROM master.product WHERE part_id = 'PART-A1-001'),
@@ -238,20 +240,20 @@ INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_i
  ARRAY['Parameter', 'Value', 'Unit'],
  ARRAY['description:nominal', 'description:tolerance'],
  ARRAY[
-    '{"keyname": "Resistance", "step": "1.0", "composition": "main", "Parameter": "R_total", "Value": 100, "Unit": "Ohm", "tolerance": "5%"}'::jsonb,
-    '{"keyname": "Capacitance", "step": "2.0", "composition": "main", "Parameter": "C_filter", "Value": 10, "Unit": "uF", "tolerance": "10%"}'::jsonb,
-    '{"keyname": "Inductance", "step": "3.0", "composition": "main", "Parameter": "L_choke", "Value": 1, "Unit": "mH", "tolerance": "20%"}'::jsonb,
-    '{"keyname": "Voltage_Max", "step": "4.0", "composition": "main", "Parameter": "Vcc_max", "Value": 5, "Unit": "V", "tolerance": "1%"}'::jsonb,
-    '{"keyname": "Current_Idle", "step": "5.0", "composition": "main", "Parameter": "I_idle", "Value": 100, "Unit": "mA", "tolerance": "15%"}'::jsonb,
-    '{"keyname": "Frequency_Clock", "step": "6.0", "composition": "main", "Parameter": "F_clk", "Value": 100, "Unit": "MHz", "tolerance": "2%"}'::jsonb,
-    '{"keyname": "Power_Consumption", "step": "7.0", "composition": "main", "Parameter": "P_cons", "Value": 500, "Unit": "mW", "tolerance": "25%"}'::jsonb,
-    '{"keyname": "Rise_Time", "step": "8.0", "composition": "main", "Parameter": "Tr", "Value": 5, "Unit": "ns", "tolerance": "30%"}'::jsonb,
-    '{"keyname": "Fall_Time", "step": "9.0", "composition": "main", "Parameter": "Tf", "Value": 6, "Unit": "ns", "tolerance": "30%"}'::jsonb,
-    '{"keyname": "Noise_Level", "step": "10.0", "composition": "main", "Parameter": "Noise_dB", "Value": 20, "Unit": "dB", "tolerance": "50%"}'::jsonb
+  '{"keyname": "Resistance", "step": "1.0", "composition": "main", "Parameter": "R_total", "Value": 100, "Unit": "Ohm", "tolerance": "5%"}'::jsonb,
+  '{"keyname": "Capacitance", "step": "2.0", "composition": "main", "Parameter": "C_filter", "Value": 10, "Unit": "uF", "tolerance": "10%"}'::jsonb,
+  '{"keyname": "Inductance", "step": "3.0", "composition": "main", "Parameter": "L_choke", "Value": 1, "Unit": "mH", "tolerance": "20%"}'::jsonb,
+  '{"keyname": "Voltage_Max", "step": "4.0", "composition": "main", "Parameter": "Vcc_max", "Value": 5, "Unit": "V", "tolerance": "1%"}'::jsonb,
+  '{"keyname": "Current_Idle", "step": "5.0", "composition": "main", "Parameter": "I_idle", "Value": 100, "Unit": "mA", "tolerance": "15%"}'::jsonb,
+  '{"keyname": "Frequency_Clock", "step": "6.0", "composition": "main", "Parameter": "F_clk", "Value": 100, "Unit": "MHz", "tolerance": "2%"}'::jsonb,
+  '{"keyname": "Power_Consumption", "step": "7.0", "composition": "main", "Parameter": "P_cons", "Value": 500, "Unit": "mW", "tolerance": "25%"}'::jsonb,
+  '{"keyname": "Rise_Time", "step": "8.0", "composition": "main", "Parameter": "Tr", "Value": 5, "Unit": "ns", "tolerance": "30%"}'::jsonb,
+  '{"keyname": "Fall_Time", "step": "9.0", "composition": "main", "Parameter": "Tf", "Value": 6, "Unit": "ns", "tolerance": "30%"}'::jsonb,
+  '{"keyname": "Noise_Level", "step": "10.0", "composition": "main", "Parameter": "Noise_dB", "Value": 20, "Unit": "dB", "tolerance": "50%"}'::jsonb
  ], 1);
 
 -- Product PART-B1-001 에 대한 샘플 데이터
-INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, table_name, original_headers, meta_info, table_rows, rev_no) VALUES
+INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, key_table_name, original_header, meta_info_list, key_table_json, rev_no) VALUES
 ((SELECT id FROM master.product WHERE part_id = 'PART-B1-001'),
  (SELECT beol_option_id FROM master.product WHERE part_id = 'PART-B1-001'),
  (SELECT processplan_id FROM master.product WHERE part_id = 'PART-B1-001'),
@@ -259,20 +261,20 @@ INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_i
  ARRAY['Dimension', 'Value', 'Tolerance'],
  ARRAY['units:mm'],
  ARRAY[
-    '{"keyname": "Length", "step": "1.0", "composition": "overall", "Dimension": "Length", "Value": 150, "Tolerance": "0.1mm"}'::jsonb,
-    '{"keyname": "Width", "step": "2.0", "composition": "overall", "Dimension": "Width", "Value": 80, "Tolerance": "0.1mm"}'::jsonb,
-    '{"keyname": "Height", "step": "3.0", "composition": "overall", "Dimension": "Height", "Value": 20, "Tolerance": "0.05mm"}'::jsonb,
-    '{"keyname": "Weight", "step": "4.0", "composition": "overall", "Dimension": "Weight", "Value": 200, "Tolerance": "5g"}'::jsonb,
-    '{"keyname": "Screw_Size", "step": "5.0", "composition": "fasteners", "Dimension": "Screw_Size", "Value": 2.5, "Tolerance": "0.01mm"}'::jsonb,
-    '{"keyname": "Hole_Diameter", "step": "6.0", "composition": "holes", "Dimension": "Hole_Diameter", "Value": 3, "Tolerance": "0.02mm"}'::jsonb,
-    '{"keyname": "Mounting_Pitch", "step": "7.0", "composition": "mounting", "Dimension": "Mounting_Pitch", "Value": 70, "Tolerance": "0.05mm"}'::jsonb,
-    '{"keyname": "Surface_Roughness", "step": "8.0", "composition": "finish", "Dimension": "Roughness", "Value": 0.8, "Tolerance": "0.1um"}'::jsonb,
-    '{"keyname": "Bend_Radius", "step": "9.0", "composition": "bending", "Dimension": "Radius", "Value": 5, "Tolerance": "0.05mm"}'::jsonb,
-    '{"keyname": "Thickness", "step": "10.0", "composition": "material", "Dimension": "Thickness", "Value": 1.2, "Tolerance": "0.02mm"}'::jsonb
+  '{"keyname": "Length", "step": "1.0", "composition": "overall", "Dimension": "Length", "Value": 150, "Tolerance": "0.1mm"}'::jsonb,
+  '{"keyname": "Width", "step": "2.0", "composition": "overall", "Dimension": "Width", "Value": 80, "Tolerance": "0.1mm"}'::jsonb,
+  '{"keyname": "Height", "step": "3.0", "composition": "overall", "Dimension": "Height", "Value": 20, "Tolerance": "0.05mm"}'::jsonb,
+  '{"keyname": "Weight", "step": "4.0", "composition": "overall", "Dimension": "Weight", "Value": 200, "Tolerance": "5g"}'::jsonb,
+  '{"keyname": "Screw_Size", "step": "5.0", "composition": "fasteners", "Dimension": "Screw_Size", "Value": 2.5, "Tolerance": "0.01mm"}'::jsonb,
+  '{"keyname": "Hole_Diameter", "step": "6.0", "composition": "holes", "Dimension": "Hole_Diameter", "Value": 3, "Tolerance": "0.02mm"}'::jsonb,
+  '{"keyname": "Mounting_Pitch", "step": "7.0", "composition": "mounting", "Dimension": "Mounting_Pitch", "Value": 70, "Tolerance": "0.05mm"}'::jsonb,
+  '{"keyname": "Surface_Roughness", "step": "8.0", "composition": "finish", "Dimension": "Roughness", "Value": 0.8, "Tolerance": "0.1um"}'::jsonb,
+  '{"keyname": "Bend_Radius", "step": "9.0", "composition": "bending", "Dimension": "Radius", "Value": 5, "Tolerance": "0.05mm"}'::jsonb,
+  '{"keyname": "Thickness", "step": "10.0", "composition": "material", "Dimension": "Thickness", "Value": 1.2, "Tolerance": "0.02mm"}'::jsonb
  ], 1);
 
 -- Product PART-C1-001 에 대한 샘플 데이터
-INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, table_name, original_headers, meta_info, table_rows, rev_no) VALUES
+INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_id, key_table_name, original_header, meta_info_list, key_table_json, rev_no) VALUES
 ((SELECT id FROM master.product WHERE part_id = 'PART-C1-001'),
  (SELECT beol_option_id FROM master.product WHERE part_id = 'PART-C1-001'),
  (SELECT processplan_id FROM master.product WHERE part_id = 'PART-C1-001'),
@@ -280,16 +282,16 @@ INSERT INTO keydata.product_key_table (product_id, beol_option_id, processplan_i
  ARRAY['Condition', 'Min_Value', 'Max_Value', 'Unit'],
  ARRAY['description:operating_range'],
  ARRAY[
-    '{"keyname": "Temperature_Operating", "step": "1.0", "composition": "env", "Condition": "Operating Temperature", "Min_Value": -20, "Max_Value": 70, "Unit": "°C"}'::jsonb,
-    '{"keyname": "Humidity_Operating", "step": "2.0", "composition": "env", "Condition": "Operating Humidity", "Min_Value": 10, "Max_Value": 90, "Unit": "%RH"}'::jsonb,
-    '{"keyname": "Vibration_Tolerance", "step": "3.0", "composition": "env", "Condition": "Vibration Tolerance", "Min_Value": 0, "Max_Value": 5, "Unit": "G"}'::jsonb,
-    '{"keyname": "Shock_Tolerance", "step": "4.0", "composition": "env", "Condition": "Shock Tolerance", "Min_Value": 0, "Max_Value": 10, "Unit": "G"}'::jsonb,
-    '{"keyname": "Pressure_Range", "step": "5.0", "composition": "env", "Condition": "Pressure Range", "Min_Value": 80, "Max_Value": 110, "Unit": "kPa"}'::jsonb,
-    '{"keyname": "Dust_Protection", "step": "6.0", "composition": "env", "Condition": "Dust Protection", "Min_Value": 0, "Max_Value": 1, "Unit": "IP"}'::jsonb,
-    '{"keyname": "Water_Resistance", "step": "7.0", "composition": "env", "Condition": "Water Resistance", "Min_Value": 0, "Max_Value": 1, "Unit": "IP"}'::jsonb,
-    '{"keyname": "EMC_Compliance", "step": "8.0", "composition": "env", "Condition": "EMC Compliance", "Min_Value": 0, "Max_Value": 1, "Unit": "Class"}'::jsonb,
-    '{"keyname": "Altitude_Max", "step": "9.0", "composition": "env", "Condition": "Max Altitude", "Min_Value": 0, "Max_Value": 3000, "Unit": "m"}'::jsonb,
-    '{"keyname": "UV_Exposure", "step": "10.0", "composition": "env", "Condition": "UV Exposure Limit", "Min_Value": 0, "Max_Value": 100, "Unit": "hrs"}'::jsonb
+  '{"keyname": "Temperature_Operating", "step": "1.0", "composition": "env", "Condition": "Operating Temperature", "Min_Value": -20, "Max_Value": 70, "Unit": "°C"}'::jsonb,
+  '{"keyname": "Humidity_Operating", "step": "2.0", "composition": "env", "Condition": "Operating Humidity", "Min_Value": 10, "Max_Value": 90, "Unit": "%RH"}'::jsonb,
+  '{"keyname": "Vibration_Tolerance", "step": "3.0", "composition": "env", "Condition": "Vibration Tolerance", "Min_Value": 0, "Max_Value": 5, "Unit": "G"}'::jsonb,
+  '{"keyname": "Shock_Tolerance", "step": "4.0", "composition": "env", "Condition": "Shock Tolerance", "Min_Value": 0, "Max_Value": 10, "Unit": "G"}'::jsonb,
+  '{"keyname": "Pressure_Range", "step": "5.0", "composition": "env", "Condition": "Pressure Range", "Min_Value": 80, "Max_Value": 110, "Unit": "kPa"}'::jsonb,
+  '{"keyname": "Dust_Protection", "step": "6.0", "composition": "env", "Condition": "Dust Protection", "Min_Value": 0, "Max_Value": 1, "Unit": "IP"}'::jsonb,
+  '{"keyname": "Water_Resistance", "step": "7.0", "composition": "env", "Condition": "Water Resistance", "Min_Value": 0, "Max_Value": 1, "Unit": "IP"}'::jsonb,
+  '{"keyname": "EMC_Compliance", "step": "8.0", "composition": "env", "Condition": "EMC Compliance", "Min_Value": 0, "Max_Value": 1, "Unit": "Class"}'::jsonb,
+  '{"keyname": "Altitude_Max", "step": "9.0", "composition": "env", "Condition": "Max Altitude", "Min_Value": 0, "Max_Value": 3000, "Unit": "m"}'::jsonb,
+  '{"keyname": "UV_Exposure", "step": "10.0", "composition": "env", "Condition": "UV Exposure Limit", "Min_Value": 0, "Max_Value": 100, "Unit": "hrs"}'::jsonb
  ], 1);
 8. keydata.key_info_table (Processplan 당 4개 이상, table_name과 table_row 다르게)
 SQL
@@ -299,8 +301,8 @@ CREATE TABLE keydata.key_info_table (
     id SERIAL PRIMARY KEY,
     processplan_id INT NOT NULL,
     info_table_name TEXT NOT NULL,
-    original_headers TEXT[] NOT NULL,
-    info_table_rows JSONB[] NOT NULL, -- JSONB[] for better performance
+    original_header TEXT[] NOT NULL,
+    info_table_json JSONB[] NOT NULL, -- JSONB[] for better performance
     rev_no INT NOT NULL,
     update_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT fk_processplan_key_info
@@ -312,57 +314,60 @@ CREATE TABLE keydata.key_info_table (
 
 -- DML for keydata.key_info_table (4+ per processplan)
 -- Processplan 'DR-A_2024_001' 에 대한 샘플 데이터
-INSERT INTO keydata.key_info_table (processplan_id, info_table_name, original_headers, info_table_rows, rev_no) VALUES
+-- DML for keydata.key_info_table (4+ per processplan)
+-- Processplan 'DR-A_2024_001' 에 대한 샘플 데이터
+INSERT INTO keydata.key_info_table (processplan_id, info_table_name, original_header, info_table_json, rev_no) VALUES
 ((SELECT id FROM master.processplan WHERE design_rule = 'DR-A_2024_001'),
  'DR_A_Design_Constraints',
  ARRAY['Constraint_ID', 'Category', 'Description', 'Threshold'],
  ARRAY[
-    '{"keyname": "C001", "step": "1.0", "composition": "DR", "Constraint_ID": "C001", "Category": "Electrical", "Description": "Max Current", "Threshold": "10A"}'::jsonb,
-    '{"keyname": "C002", "step": "2.0", "composition": "DR", "Constraint_ID": "C002", "Category": "Mechanical", "Description": "Min Bend Radius", "Threshold": "0.5mm"}'::jsonb,
-    '{"keyname": "C003", "step": "3.0", "composition": "DR", "Constraint_ID": "C003", "Category": "Thermal", "Description": "Max Operating Temp", "Threshold": "85C"}'::jsonb,
-    '{"keyname": "C004", "step": "4.0", "composition": "DR", "Constraint_ID": "C004", "Category": "Reliability", "Description": "MTBF Target", "Threshold": "10000h"}'::jsonb,
-    '{"keyname": "C005", "step": "5.0", "composition": "DR", "Constraint_ID": "C005", "Category": "Manufacturing", "Description": "Min Solder Pad Size", "Threshold": "0.2mm"}'::jsonb,
-    '{"keyname": "C006", "step": "6.0", "composition": "DR", "Constraint_ID": "C006", "Category": "Environmental", "Description": "Humidity Tolerance", "Threshold": "95%"}'::jsonb,
-    '{"keyname": "C007", "step": "7.0", "composition": "DR", "Constraint_ID": "C007", "Category": "Performance", "Description": "Max Clock Freq", "Threshold": "1GHz"}'::jsonb,
-    '{"keyname": "C008", "step": "8.0", "composition": "DR", "Constraint_ID": "C008", "Category": "Safety", "Description": "Insulation Voltage", "Threshold": "1.5kV"}'::jsonb,
-    '{"keyname": "C009", "step": "9.0", "composition": "DR", "Constraint_ID": "C009", "Category": "Cost", "Description": "Target BOM Cost", "Threshold": "$50"}'::jsonb,
-    '{"keyname": "C010", "step": "10.0", "composition": "DR", "Constraint_ID": "C010", "Category": "Physical", "Description": "Max Component Height", "Threshold": "5mm"}'::jsonb
+  '{"keyname": "C001", "step": "1.0", "composition": "DR", "Constraint_ID": "C001", "Category": "Electrical", "Description": "Max Current", "Threshold": "10A"}'::jsonb,
+  '{"keyname": "C002", "step": "2.0", "composition": "DR", "Constraint_ID": "C002", "Category": "Mechanical", "Description": "Min Bend Radius", "Threshold": "0.5mm"}'::jsonb,
+  '{"keyname": "C003", "step": "3.0", "composition": "DR", "Constraint_ID": "C003", "Category": "Thermal", "Description": "Max Operating Temp", "Threshold": "85C"}'::jsonb,
+  '{"keyname": "C004", "step": "4.0", "composition": "DR", "Constraint_ID": "C004", "Category": "Reliability", "Description": "MTBF Target", "Threshold": "10000h"}'::jsonb,
+  '{"keyname": "C005", "step": "5.0", "composition": "DR", "Constraint_ID": "C005", "Category": "Manufacturing", "Description": "Min Solder Pad Size", "Threshold": "0.2mm"}'::jsonb,
+  '{"keyname": "C006", "step": "6.0", "composition": "DR", "Constraint_ID": "C006", "Category": "Environmental", "Description": "Humidity Tolerance", "Threshold": "95%"}'::jsonb,
+  '{"keyname": "C007", "step": "7.0", "composition": "DR", "Constraint_ID": "C007", "Category": "Performance", "Description": "Max Clock Freq", "Threshold": "1GHz"}'::jsonb,
+  '{"keyname": "C008", "step": "8.0", "composition": "DR", "Constraint_ID": "C008", "Category": "Safety", "Description": "Insulation Voltage", "Threshold": "1.5kV"}'::jsonb,
+  '{"keyname": "C009", "step": "9.0", "composition": "DR", "Constraint_ID": "C009", "Category": "Cost", "Description": "Target BOM Cost", "Threshold": "$50"}'::jsonb,
+  '{"keyname": "C010", "step": "10.0", "composition": "DR", "Constraint_ID": "C010", "Category": "Physical", "Description": "Max Component Height", "Threshold": "5mm"}'::jsonb
  ], 1);
 
-INSERT INTO keydata.key_info_table (processplan_id, info_table_name, original_headers, info_table_rows, rev_no) VALUES
+INSERT INTO keydata.key_info_table (processplan_id, info_table_name, original_header, info_table_json, rev_no) VALUES
 ((SELECT id FROM master.processplan WHERE design_rule = 'DR-A_2024_001'),
  'DR_A_Process_Steps',
  ARRAY['Step_No', 'Process_Name', 'Tool_Used', 'Duration_min'],
  ARRAY[
-    '{"keyname": "S01", "step": "1.0", "composition": "proc", "Step_No": 1, "Process_Name": "Wafer Cleaning", "Tool_Used": "Wet Bench 1", "Duration_min": 30}'::jsonb,
-    '{"keyname": "S02", "step": "2.0", "composition": "proc", "Step_No": 2, "Process_Name": "Oxidation", "Tool_Used": "Furnace 1", "Duration_min": 120}'::jsonb,
-    '{"keyname": "S03", "step": "3.0", "composition": "proc", "Step_No": 3, "Process_Name": "Lithography", "Tool_Used": "Stepper 2", "Duration_min": 60}'::jsonb,
-    '{"keyname": "S04", "step": "4.0", "composition": "proc", "Step_No": 4, "Process_Name": "Etching", "Tool_Used": "RIE Plasma", "Duration_min": 45}'::jsonb,
-    '{"keyname": "S05", "step": "5.0", "composition": "proc", "Step_No": 5, "Process_Name": "Ion Implantation", "Tool_Used": "Ion Implanter", "Duration_min": 90}'::jsonb,
-    '{"keyname": "S06", "step": "6.0", "composition": "proc", "Step_No": 6, "Process_Name": "Deposition", "Tool_Used": "PECVD", "Duration_min": 75}'::jsonb,
-    '{"keyname": "S07", "step": "7.0", "composition": "proc", "Step_No": 7, "Process_Name": "Annealing", "Tool_Used": "RTP", "Duration_min": 15}'::jsonb,
-    '{"keyname": "S08", "step": "8.0", "composition": "proc", "Step_No": 8, "Process_Name": "Metallization", "Tool_Used": "PVD Sputter", "Duration_min": 180}'::jsonb,
-    '{"keyname": "S09", "step": "9.0", "composition": "proc", "Step_No": 9, "Process_Name": "Passivation", "Tool_Used": "PECVD 2", "Duration_min": 100}'::jsonb,
-    '{"keyname": "S10", "step": "10.0", "composition": "proc", "Step_No": 10, "Process_Name": "Probe Test", "Tool_Used": "Prober X", "Duration_min": 240}'::jsonb
+  '{"keyname": "S01", "step": "1.0", "composition": "proc", "Step_No": 1, "Process_Name": "Wafer Cleaning", "Tool_Used": "Wet Bench 1", "Duration_min": 30}'::jsonb,
+  '{"keyname": "S02", "step": "2.0", "composition": "proc", "Step_No": 2, "Process_Name": "Oxidation", "Tool_Used": "Furnace 1", "Duration_min": 120}'::jsonb,
+  '{"keyname": "S03", "step": "3.0", "composition": "proc", "Step_No": 3, "Process_Name": "Lithography", "Tool_Used": "Stepper 2", "Duration_min": 60}'::jsonb,
+  '{"keyname": "S04", "step": "4.0", "composition": "proc", "Step_No": 4, "Process_Name": "Etching", "Tool_Used": "RIE Plasma", "Duration_min": 45}'::jsonb,
+  '{"keyname": "S05", "step": "5.0", "composition": "proc", "Step_No": 5, "Process_Name": "Ion Implantation", "Tool_Used": "Ion Implanter", "Duration_min": 90}'::jsonb,
+  '{"keyname": "S06", "step": "6.0", "composition": "proc", "Step_No": 6, "Process_Name": "Deposition", "Tool_Used": "PECVD", "Duration_min": 75}'::jsonb,
+  '{"keyname": "S07", "step": "7.0", "composition": "proc", "Step_No": 7, "Process_Name": "Annealing", "Tool_Used": "RTP", "Duration_min": 15}'::jsonb,
+  '{"keyname": "S08", "step": "8.0", "composition": "proc", "Step_No": 8, "Process_Name": "Metallization", "Tool_Used": "PVD Sputter", "Duration_min": 180}'::jsonb,
+  '{"keyname": "S09", "step": "9.0", "composition": "proc", "Step_No": 9, "Process_Name": "Passivation", "Tool_Used": "PECVD 2", "Duration_min": 100}'::jsonb,
+  '{"keyname": "S10", "step": "10.0", "composition": "proc", "Step_No": 10, "Process_Name": "Probe Test", "Tool_Used": "Prober X", "Duration_min": 240}'::jsonb
  ], 1);
 
 -- Processplan 'DR-B_2024_002' 에 대한 샘플 데이터
-INSERT INTO keydata.key_info_table (processplan_id, info_table_name, original_headers, info_table_rows, rev_no) VALUES
+INSERT INTO keydata.key_info_table (processplan_id, info_table_name, original_header, info_table_json, rev_no) VALUES
 ((SELECT id FROM master.processplan WHERE design_rule = 'DR-B_2024_002'),
  'DR_B_Recipe_Parameters',
  ARRAY['Recipe_ID', 'Parameter_Name', 'Min_Value', 'Max_Value', 'Default_Value'],
  ARRAY[
-    '{"keyname": "R_P_001", "step": "1.0", "composition": "recipe", "Recipe_ID": "R001", "Parameter_Name": "Pressure", "Min_Value": 10, "Max_Value": 100, "Default_Value": 50}'::jsonb,
-    '{"keyname": "R_P_002", "step": "2.0", "composition": "recipe", "Recipe_ID": "R001", "Parameter_Name": "Temperature", "Min_Value": 150, "Max_Value": 300, "Default_Value": 200}'::jsonb,
-    '{"keyname": "R_P_003", "step": "3.0", "composition": "recipe", "Recipe_ID": "R002", "Parameter_Name": "Flow_Rate", "Min_Value": 1, "Max_Value": 10, "Default_Value": 5}'::jsonb,
-    '{"keyname": "R_P_004", "step": "4.0", "composition": "recipe", "Recipe_ID": "R002", "Parameter_Name": "Power", "Min_Value": 500, "Max_Value": 2000, "Default_Value": 1000}'::jsonb,
-    '{"keyname": "R_P_005", "step": "5.0", "composition": "recipe", "Recipe_ID": "R003", "Parameter_Name": "Etch_Time", "Min_Value": 30, "Max_Value": 120, "Default_Value": 60}'::jsonb,
-    '{"keyname": "R_P_006", "step": "6.0", "composition": "recipe", "Recipe_ID": "R003", "Parameter_Name": "Gas_Mix_Ratio", "Min_Value": 0.1, "Max_Value": 0.9, "Default_Value": 0.5}'::jsonb,
-    '{"keyname": "R_P_007", "step": "7.0", "composition": "recipe", "Recipe_ID": "R004", "Parameter_Name": "Spin_Speed", "Min_Value": 500, "Max_Value": 5000, "Default_Value": 2000}'::jsonb,
-    '{"keyname": "R_P_008", "step": "8.0", "composition": "recipe", "Recipe_ID": "R004", "Parameter_Name": "Cure_Time", "Min_Value": 10, "Max_Value": 60, "Default_Value": 30}'::jsonb,
-    '{"keyname": "R_P_009", "step": "9.0", "composition": "recipe", "Recipe_ID": "R005", "Parameter_Name": "Exposure_Dose", "Min_Value": 10, "Max_Value": 100, "Default_Value": 50}'::jsonb,
-    '{"keyname": "R_P_010", "step": "10.0", "composition": "recipe", "Recipe_ID": "R005", "Parameter_Name": "Focus_Offset", "Min_Value": -0.5, "Max_Value": 0.5, "Default_Value": 0}'::jsonb
+  '{"keyname": "R_P_001", "step": "1.0", "composition": "recipe", "Recipe_ID": "R001", "Parameter_Name": "Pressure", "Min_Value": 10, "Max_Value": 100, "Default_Value": 50}'::jsonb,
+  '{"keyname": "R_P_002", "step": "2.0", "composition": "recipe", "Recipe_ID": "R001", "Parameter_Name": "Temperature", "Min_Value": 150, "Max_Value": 300, "Default_Value": 200}'::jsonb,
+  '{"keyname": "R_P_003", "step": "3.0", "composition": "recipe", "Recipe_ID": "R002", "Parameter_Name": "Flow_Rate", "Min_Value": 1, "Max_Value": 10, "Default_Value": 5}'::jsonb,
+  '{"keyname": "R_P_004", "step": "4.0", "composition": "recipe", "Recipe_ID": "R002", "Parameter_Name": "Power", "Min_Value": 500, "Max_Value": 2000, "Default_Value": 1000}'::jsonb,
+  '{"keyname": "R_P_005", "step": "5.0", "composition": "recipe", "Recipe_ID": "R003", "Parameter_Name": "Etch_Time", "Min_Value": 30, "Max_Value": 120, "Default_Value": 60}'::jsonb,
+  '{"keyname": "R_P_006", "step": "6.0", "composition": "recipe", "Recipe_ID": "R003", "Parameter_Name": "Gas_Mix_Ratio", "Min_Value": 0.1, "Max_Value": 0.9, "Default_Value": 0.5}'::jsonb,
+  '{"keyname": "R_P_007", "step": "7.0", "composition": "recipe", "Recipe_ID": "R004", "Parameter_Name": "Spin_Speed", "Min_Value": 500, "Max_Value": 5000, "Default_Value": 2000}'::jsonb,
+  '{"keyname": "R_P_008", "step": "8.0", "composition": "recipe", "Recipe_ID": "R004", "Parameter_Name": "Cure_Time", "Min_Value": 10, "Max_Value": 60, "Default_Value": 30}'::jsonb,
+  '{"keyname": "R_P_009", "step": "9.0", "composition": "recipe", "Recipe_ID": "R005", "Parameter_Name": "Exposure_Dose", "Min_Value": 10, "Max_Value": 100, "Default_Value": 50}'::jsonb,
+  '{"keyname": "R_P_010", "step": "10.0", "composition": "recipe", "Recipe_ID": "R005", "Parameter_Name": "Focus_Offset", "Min_Value": -0.5, "Max_Value": 0.5, "Default_Value": 0}'::jsonb
  ], 1);
+
 -- 📝 참고 사항
 -- ON UPDATE CASCADE / ON DELETE CASCADE: 외래 키 제약 조건에 이 옵션이 포함되어 있어, 부모 테이블의 행이 업데이트되거나 삭제될 때 자식 테이블의 관련 행도 자동으로 업데이트/삭제됩니다.
 
