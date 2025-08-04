@@ -121,6 +121,7 @@ CREATE TABLE request.request_item (
     product_id INT NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
+    edm_list TEXT[],
     requester_id TEXT NOT NULL,
     requester_name TEXT NOT NULL,
     update_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
